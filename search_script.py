@@ -7,9 +7,21 @@ import psycopg2.extras
 
 from operator import itemgetter
 from math import cos, asin, sqrt
+from argparse import ArgumentParser
 
 get_poi_query = "SELECT name, address, latitude, longitude, rating FROM data.poi"
 get_adverts_query = "SELECT a.title, a.address, g.latitude, g.longitude FROM data.advert a JOIN data.geocoded g ON g.address = a.address WHERE a.address ~* %s"
+
+def get_args():
+	argp = ArgumentParser(__doc__)
+	argp.add_argument(
+		"--address",
+		help="Address to search apartments for",
+		default="Marasti"
+		)
+
+	args = vars(argp.parse_args())
+	return args
 
 
 def distance(lat1, lon1, lat2, lon2):
@@ -47,9 +59,11 @@ connection = psycopg2.connect(
 							)
 cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+args = get_args()
+keyword = [args["address"]]
+
 cursor.execute(get_poi_query)
 poi = [dict(item) for item in cursor.fetchall()]
-keyword = ["marasti"]
 cursor.execute(get_adverts_query, keyword)
 data = [dict(item) for item in cursor.fetchall()]
 connection.close()
