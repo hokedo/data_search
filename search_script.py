@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import os
+import json
 import psycopg2
 import psycopg2.extras
 
+from operator import itemgetter
 from math import cos, asin, sqrt
 
 get_poi_query = "SELECT name, address, latitude, longitude, rating FROM data.poi"
@@ -44,4 +46,33 @@ connection = psycopg2.connect(
 							port=port
 							)
 cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+cursor.execute(get_poi_query)
+poi = [dict(item) for item in cursor.fetchall()]
+keyword = "marasti"
+cursor.execute(get_adverts_query, keyword)
+data = [dict(item) for item in cursor.fetchall()]
 connection.close()
+
+for apartment in data:
+	schools = []
+	for school in poi:
+		d = distance(
+			apartment["latitude"],
+			apartment["longitude"],
+			school["latitude"],
+			school["longitude"]
+			)
+		school["distance"] = d
+		schools.append(school)
+	# get top 5 nearest schools
+	apartment["schools"] = sorted(
+							schools,
+							key=itemgetter("distance"),
+							reverse=True
+							)[:5]
+
+
+print json.dumps(data)
+
+
