@@ -10,7 +10,7 @@ from math import cos, asin, sqrt
 from argparse import ArgumentParser
 
 get_poi_query = "SELECT name, address, latitude, longitude, rating FROM data.poi"
-get_adverts_query = "SELECT a.title, a.address, g.latitude, g.longitude FROM data.advert a JOIN data.geocoded g ON g.address = a.address WHERE a.address ~* %s"
+get_adverts_query = "SELECT a.title, a.address, a.url, g.latitude, g.longitude FROM data.advert a JOIN data.geocoded g ON g.address = a.address WHERE a.address ~* %s"
 
 def get_args():
 	argp = ArgumentParser(__doc__)
