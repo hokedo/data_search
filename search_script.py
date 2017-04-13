@@ -49,7 +49,7 @@ cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 cursor.execute(get_poi_query)
 poi = [dict(item) for item in cursor.fetchall()]
-keyword = "marasti"
+keyword = ["marasti"]
 cursor.execute(get_adverts_query, keyword)
 data = [dict(item) for item in cursor.fetchall()]
 connection.close()
@@ -69,7 +69,7 @@ for apartment in data:
 	apartment["schools"] = sorted(
 							schools,
 							key=itemgetter("distance"),
-							reverse=True
+							reverse=False
 							)[:5]
 
 
