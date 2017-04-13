@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import psycopg2
 import psycopg2.extras
 
@@ -14,7 +15,7 @@ def distance(lat1, lon1, lat2, lon2):
     a = 0.5 - cos((lat2 - lat1) * p)/2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
     return 12742 * asin(sqrt(a))
 
-def pgpass(host, user):
+def pgpass(h, username):
 		"""
 		Read the password, for the db connection, in the
 		user's "pgpass" file located in the root of the
@@ -24,17 +25,17 @@ def pgpass(host, user):
 		with open(pgpass_path) as f:
 			for line in f:
 				host, port, _, user, passwd = line.split(':')
-				if host == self.host and user == self.username:
+				if host == h and user == username:
 					return passwd.strip()
 
-		error_msg = "Could not find password for user {} is ~/.pgpass".format(self.username)
+		error_msg = "Could not find password for user {} is ~/.pgpass".format(username)
 		raise ValueError(error_msg)
 
 dbname = "auto_scraper"
-user = "rw_ser"
+user = "rw_user"
 port = 5432
 host = "localhost"
-passsword = pgpass(host, user)
+password = pgpass(host, user)
 connection = psycopg2.connect(
 							dbname=dbname,
 							user=user,
@@ -43,4 +44,4 @@ connection = psycopg2.connect(
 							port=port
 							)
 cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-self.connection.close()
+connection.close()
