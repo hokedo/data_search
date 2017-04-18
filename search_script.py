@@ -15,8 +15,6 @@ with open("get_adverts.sql") as get_adverts_query_path:
 
 with open("get_top_5.sql") as get_top_query_path:
 	get_top_5_query = get_top_query_path.read().strip()
-	
-get_top_5_query = "SELECT * FROM data.poi p JOIN data.poi_distance pd ON pd.poi_id = p.id "
 
 def get_args():
 	argp = ArgumentParser(__doc__)
@@ -74,7 +72,7 @@ data = [dict(item) for item in cursor.fetchall()]
 for apartment in data:
 	address_id = apartment["address_id"]
 	cursor.execute(get_top_5_query, [address_id])
-	top_5_schools = list(cursor.fetchall())
+	top_5_schools = [dict(item) for item in cursor.fetchall()]
 	apartment["top_5"] = top_5_schools
 
 connection.close()
