@@ -10,7 +10,13 @@ from math import cos, asin, sqrt
 from argparse import ArgumentParser
 
 get_poi_query = "SELECT name, address, latitude, longitude, rating FROM data.poi"
-get_adverts_query = "SELECT a.title, a.address, a.price, a.url, g.latitude, g.longitude FROM data.advert a JOIN data.geocoded g ON g.address = a.address WHERE a.address ~* %s"
+with open("get_adverts.sql") as get_adverts_query_path:
+	get_adverts_query = get_adverts_query_path.read().strip()
+
+with open("get_top_5.sql") as get_top_query_path:
+	get_top_5_query = get_top_query_path.read().strip()
+	
+get_top_5_query = "SELECT * FROM data.poi p JOIN data.poi_distance pd ON pd.poi_id = p.id "
 
 def get_args():
 	argp = ArgumentParser(__doc__)
@@ -62,30 +68,16 @@ cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 args = get_args()
 keyword = [args["address"]]
 
-cursor.execute(get_poi_query)
-poi = [dict(item) for item in cursor.fetchall()]
 cursor.execute(get_adverts_query, keyword)
 data = [dict(item) for item in cursor.fetchall()]
-connection.close()
 
 for apartment in data:
-	schools = []
-	for school in poi:
-		d = distance(
-			apartment["latitude"],
-			apartment["longitude"],
-			school["latitude"],
-			school["longitude"]
-			)
-		school["distance"] = d
-		schools.append(school)
-	# get top 5 nearest schools
-	apartment["schools"] = sorted(
-							schools,
-							key=itemgetter("distance"),
-							reverse=False
-							)[:5]
+	address_id = apartment["address_id"]
+	cursor.execute(get_top_5_query, [address_id])
+	top_5_schools = list(cursor.fetchall())
+	apartment["top_5"] = top_5_schools
 
+connection.close()
 
 print json.dumps(data)
 
