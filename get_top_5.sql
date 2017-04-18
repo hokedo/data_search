@@ -1,5 +1,5 @@
-SELECT 
-	p.name
+SELECT
+	p.name,
 	p.address,
 	pd.distance,
 	p.rating,
@@ -7,6 +7,6 @@ SELECT
 FROM data.poi p
 JOIN data.poi_distance pd
 	ON p.id = pd.poi_id
-	AND pd.address_id = %s;
+WHERE pd.address_id = %s
 ORDER BY pd.distance DESC
-LIMIT 5;
+LIMIT 5
