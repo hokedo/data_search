@@ -2,14 +2,21 @@
 
 import os
 import json
+import urlparse
 import psycopg2
 import psycopg2.extras
 
+from urllib import urlencode
+from datetime import datetime
+from datetime import timedelta
 from operator import itemgetter
 from math import cos, asin, sqrt
 from argparse import ArgumentParser
 
-get_poi_query = "SELECT name, address, latitude, longitude, rating FROM data.poi"
+insert_poi_dist_query = "UPDATE data.poi_distance SET distance = %s, instructions = %s WHERE poi_id = %s AND address_id = %s"
+get_poi_query = "SELECT id, latitude, longitude FROM data.poi"
+directions_api = "https://maps.googleapis.com/maps/api/directions/json"
+
 with open("get_adverts.sql") as get_adverts_query_path:
 	get_adverts_query = get_adverts_query_path.read().strip()
 
@@ -22,6 +29,10 @@ def get_args():
 		"--address",
 		help="Address to search apartments for",
 		default="Marasti"
+		)
+	argp.add_argument(
+		"--key",
+		help="Google Directions API key"
 		)
 
 	args = vars(argp.parse_args())
@@ -49,34 +60,98 @@ def pgpass(h, username):
 		error_msg = "Could not find password for user {} is ~/.pgpass".format(username)
 		raise ValueError(error_msg)
 
-dbname = "auto_scraper"
-user = "rw_user"
-port = 5432
-host = "localhost"
-password = pgpass(host, user)
-connection = psycopg2.connect(
-							dbname=dbname,
-							user=user,
-							password=password,
-							host=host,
-							port=port
-							)
-cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+def tomorrow_ms():
+	# Create tomorrow's date for noon
+	date = datetime.now()
+	date = date.replace(hour=13, minute=0)
+	date = date + timedelta(days=1)
+	return int((date - datetime(1970, 1, 1)).total_seconds())
+	
 
-args = get_args()
-keyword = [args["address"]]
+if __name__ == "__main__":
+	dbname = "auto_scraper"
+	user = "rw_user"
+	port = 5432
+	host = "localhost"
+	password = pgpass(host, user)
+	connection = psycopg2.connect(
+								dbname=dbname,
+								user=user,
+								password=password,
+								host=host,
+								port=port
+								)
+	cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+	url_parts = list(urlparse.urlparse(directions_api))
 
-cursor.execute(get_adverts_query, keyword)
-data = [dict(item) for item in cursor.fetchall()]
+	try:
+		if args.get("key"):
+			direction_params = {
+				"mode": "transit",
+				"transit_mode": "bus",
+				"key": args["key"],
+				"departure_time": tomorrow_ms()
+			}
+			cursor.execute(get_poi_query)
+			pois = [dict(poi) for poi in cursor.fetchall()]
 
-for apartment in data:
-	address_id = apartment["address_id"]
-	cursor.execute(get_top_5_query, [address_id])
-	top_5_schools = [dict(item) for item in cursor.fetchall()]
-	apartment["top_5"] = top_5_schools
+			cursor.execute(get_adverts_query)
+			for advert in cursor.fetchall():
+				advert = dict(advert)
+				for poi in pois:
+					direction_params["origin"] = "{},{}".format(advert["latitude"], data["longitude"])
+					direction_params["destination"] = "{},{}".format(poi["latitude"], poi["longitude"])
 
-connection.close()
+					url_parts[4] = urlencode(direction_params)
+					request_url = urlparse.urlunparse(url_parts)
 
-print json.dumps(data)
+					api_response = requests.get(request_url)
+					api_data = json.loads(api_response.text)
+
+					data = {
+						"walking_time": 0,
+						"walking_distance": 0,
+						"bus_time": 0,
+						"bus_distance": 0,
+						"buses": []
+					}
+
+					distance = route.get("legs", [{}])[0]["distance"]
+					route = api_data.get("routes", [{}])[0]
+
+					for step in route.get("legs", [{}])[0].get("steps", []):
+
+						if step.get["travel_mode"] == "WALKING":
+							data["walking_time"] += step["duration"]["value"]
+							data["walking_distance"] += step["distance"]["value"]
+
+						elif step["travel_mode"] == "TRANSIT":
+							data["buses"].append(step["transit_details"]["line"]["short_name"])
+							data["bus_time"] += step["duration"]["value"]
+							data["bus_distance"] += step["distance"]["value"]
+
+					if any(data.values()):
+						str_data = json.dumps(data)
+						cursor.execute(insert_poi_dist_query, [distance, str_data, poi["id"], advert["address_id"]])
+
+
+		else:
+			args = get_args()
+			keyword = [args["address"]]
+
+			cursor.execute(get_adverts_query, keyword)
+			data = [dict(item) for item in cursor.fetchall()]
+
+			for apartment in data:
+				address_id = apartment["address_id"]
+				cursor.execute(get_top_5_query, [address_id])
+				top_5_schools = [dict(item) for item in cursor.fetchall()]
+				apartment["top_5"] = top_5_schools
+
+			print json.dumps(data)
+	except Exception as e:
+		print e
+	finally:
+		connection.close()
 
 
