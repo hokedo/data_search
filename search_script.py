@@ -15,16 +15,6 @@ from operator import itemgetter
 from math import cos, asin, sqrt
 from argparse import ArgumentParser
 
-insert_poi_dist_query = "UPDATE data.poi_distance SET distance = %s, instructions = %s WHERE poi_id = %s AND address_id = %s"
-get_poi_query = "SELECT id, latitude, longitude FROM data.poi"
-directions_api = "https://maps.googleapis.com/maps/api/directions/json"
-
-with open("get_adverts.sql") as get_adverts_query_path:
-	get_adverts_query = get_adverts_query_path.read().strip()
-
-with open("get_top_5.sql") as get_top_query_path:
-	get_top_5_query = get_top_query_path.read().strip()
-
 def get_args():
 	argp = ArgumentParser(__doc__)
 	argp.add_argument(
@@ -90,6 +80,11 @@ if __name__ == "__main__":
 
 	try:
 		if args.get("key"):
+			insert_poi_dist_query = "UPDATE data.poi_distance SET distance = %s, instructions = %s WHERE poi_id = %s AND address_id = %s"
+			get_poi_query = "SELECT id, latitude, longitude FROM data.poi"
+			get_adresses_query = "SELECT id, address, latitude, longitude FROM data.geocoded"
+			directions_api = "https://maps.googleapis.com/maps/api/directions/json"
+
 			direction_params = {
 				"mode": "transit",
 				"transit_mode": "bus",
@@ -99,11 +94,11 @@ if __name__ == "__main__":
 			cursor.execute(get_poi_query)
 			pois = [dict(poi) for poi in cursor.fetchall()]
 
-			cursor.execute(get_adverts_query)
-			for advert in cursor.fetchall():
-				advert = dict(advert)
+			cursor.execute(get_adresses_query)
+			for address in cursor.fetchall():
+				address = dict(address)
 				for poi in pois:
-					direction_params["origin"] = "{},{}".format(advert["latitude"], data["longitude"])
+					direction_params["origin"] = "{},{}".format(address["latitude"], data["longitude"])
 					direction_params["destination"] = "{},{}".format(poi["latitude"], poi["longitude"])
 
 					url_parts[4] = urlencode(direction_params)
@@ -136,13 +131,19 @@ if __name__ == "__main__":
 
 					if any(data.values()):
 						str_data = json.dumps(data)
-						cursor.execute(insert_poi_dist_query, [distance, str_data, poi["id"], advert["address_id"]])
+						cursor.execute(insert_poi_dist_query, [distance, str_data, poi["id"], address["id"]])
 
 
 		else:
+			with open("get_addresss.sql") as get_addresss_query_path:
+				get_addresss_query = get_addresss_query_path.read().strip()
+
+			with open("get_top_5.sql") as get_top_query_path:
+				get_top_5_query = get_top_query_path.read().strip()
+
 			keyword = [args["address"]]
 
-			cursor.execute(get_adverts_query, keyword)
+			cursor.execute(get_addresss_query, keyword)
 			data = [dict(item) for item in cursor.fetchall()]
 
 			for apartment in data:
