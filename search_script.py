@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import logging
 import urlparse
 import psycopg2
 import requests
@@ -63,7 +64,7 @@ def tomorrow_ms():
 
 if __name__ == "__main__":
 	args = get_args()
-
+	logger = logging.getLogger()
 	dbname = "auto_scraper"
 	user = "rw_user"
 	port = 5432
@@ -104,7 +105,8 @@ if __name__ == "__main__":
 
 					url_parts[4] = urlencode(direction_params)
 					request_url = urlparse.urlunparse(url_parts)
-
+					logger.info(request_url)
+					
 					api_response = requests.get(request_url)
 					api_data = json.loads(api_response.text)
 
@@ -132,6 +134,9 @@ if __name__ == "__main__":
 
 					if any(data.values()):
 						str_data = json.dumps(data)
+						logger.info(str_data)
+						logger.info(poi["id"])
+						logger.info(address["id"])
 						cursor.execute(insert_poi_dist_query, [distance, str_data, poi["id"], address["id"]])
 
 
