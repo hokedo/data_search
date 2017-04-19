@@ -76,7 +76,6 @@ if __name__ == "__main__":
 								port=port
 								)
 	cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-	url_parts = list(urlparse.urlparse(directions_api))
 
 	try:
 		if args.get("key"):
@@ -84,6 +83,7 @@ if __name__ == "__main__":
 			get_poi_query = "SELECT id, latitude, longitude FROM data.poi"
 			get_adresses_query = "SELECT id, address, latitude, longitude FROM data.geocoded"
 			directions_api = "https://maps.googleapis.com/maps/api/directions/json"
+			url_parts = list(urlparse.urlparse(directions_api))
 
 			direction_params = {
 				"mode": "transit",
