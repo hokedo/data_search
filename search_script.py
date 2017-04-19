@@ -64,7 +64,10 @@ def tomorrow_ms():
 
 if __name__ == "__main__":
 	args = get_args()
+	
 	logger = logging.getLogger()
+	logger.setLevel(logging.INFO)
+
 	dbname = "auto_scraper"
 	user = "rw_user"
 	port = 5432
@@ -106,7 +109,7 @@ if __name__ == "__main__":
 					url_parts[4] = urlencode(direction_params)
 					request_url = urlparse.urlunparse(url_parts)
 					logger.info(request_url)
-					
+
 					api_response = requests.get(request_url)
 					api_data = json.loads(api_response.text)
 
