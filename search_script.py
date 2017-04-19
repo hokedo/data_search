@@ -65,6 +65,7 @@ def tomorrow_ms():
 if __name__ == "__main__":
 	args = get_args()
 	
+	logging.basicConfig()
 	logger = logging.getLogger()
 	logger.setLevel(logging.INFO)
 
@@ -141,6 +142,7 @@ if __name__ == "__main__":
 						logger.info(poi["id"])
 						logger.info(address["id"])
 						cursor.execute(insert_poi_dist_query, [distance, str_data, poi["id"], address["id"]])
+						connection.commit()
 
 
 		else:
