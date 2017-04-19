@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import json
 import urlparse
 import psycopg2
+import traceback
 import psycopg2.extras
 
 from urllib import urlencode
@@ -69,6 +71,8 @@ def tomorrow_ms():
 	
 
 if __name__ == "__main__":
+	args = get_args()
+
 	dbname = "auto_scraper"
 	user = "rw_user"
 	port = 5432
@@ -136,7 +140,6 @@ if __name__ == "__main__":
 
 
 		else:
-			args = get_args()
 			keyword = [args["address"]]
 
 			cursor.execute(get_adverts_query, keyword)
@@ -150,6 +153,7 @@ if __name__ == "__main__":
 
 			print json.dumps(data)
 	except Exception as e:
+		traceback.print_exc(file=sys.stderr)
 		print e
 	finally:
 		connection.close()
