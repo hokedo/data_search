@@ -113,15 +113,15 @@ if __name__ == "__main__":
 						"walking_distance": 0,
 						"bus_time": 0,
 						"bus_distance": 0,
-						"buses": [],
+						"buses": []
 					}
 
 					route = api_data.get("routes", [{}])[0]
-					distance = route.get("legs", [{}])[0]["distance"]
+					distance = route.get("legs", [{}])[0]["distance"]["value"]
 
 					for step in route.get("legs", [{}])[0].get("steps", []):
 
-						if step.get["travel_mode"] == "WALKING":
+						if step["travel_mode"] == "WALKING":
 							data["walking_time"] += step["duration"]["value"]
 							data["walking_distance"] += step["distance"]["value"]
 
