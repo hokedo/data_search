@@ -5,6 +5,7 @@ import sys
 import json
 import urlparse
 import psycopg2
+import requests
 import traceback
 import psycopg2.extras
 
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 			for address in cursor.fetchall():
 				address = dict(address)
 				for poi in pois:
-					direction_params["origin"] = "{},{}".format(address["latitude"], data["longitude"])
+					direction_params["origin"] = "{},{}".format(address["latitude"], address["longitude"])
 					direction_params["destination"] = "{},{}".format(poi["latitude"], poi["longitude"])
 
 					url_parts[4] = urlencode(direction_params)
