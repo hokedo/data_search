@@ -3,7 +3,9 @@ SELECT
 	p.address,
 	pd.distance,
 	p.rating,
-	p.type
+	p.type,
+	p.latitude,
+	p.longitude
 FROM data.poi p
 JOIN data.poi_distance pd
 	ON p.id = pd.poi_id

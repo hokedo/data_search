@@ -1,0 +1,14 @@
+.center {
+	display: block;
+	margin: auto;
+}
+
+input {
+	width: 40%;
+	border: 3px solid #00a1ff;
+}
+
+#map {
+	height: 400px;
+	width: 100%;
+}

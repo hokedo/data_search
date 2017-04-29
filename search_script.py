@@ -146,10 +146,10 @@ if __name__ == "__main__":
 
 
 		else:
-			with open("get_addresss.sql") as get_addresss_query_path:
+			with open("src/sql/get_adverts.sql") as get_addresss_query_path:
 				get_addresss_query = get_addresss_query_path.read().strip()
 
-			with open("get_top_5.sql") as get_top_query_path:
+			with open("src/sql/get_top_5.sql") as get_top_query_path:
 				get_top_5_query = get_top_query_path.read().strip()
 
 			keyword = [args["address"]]

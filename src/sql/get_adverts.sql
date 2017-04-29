@@ -14,3 +14,4 @@ FROM data.advert a
 JOIN data.geocoded g 
 	ON g.address = a.address
 WHERE a.address ~* %s
+LIMIT %s
