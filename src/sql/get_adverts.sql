@@ -2,7 +2,7 @@
 	get the advert data along with it's coordinates
 */
 
-SELECT 
+SELECT
 	a.title,
 	a.address,
 	a.price,

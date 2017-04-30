@@ -4,13 +4,30 @@
     <link rel="stylesheet" href="src/css/main.css">
     <link rel="stylesheet" href="src/css/nouislider.min.css">
     <script src="src/js/jquery-3.2.1.min.js"></script>
+    <script src="src/js/wNumb.js"></script>
     <script src="src/js/nouislider.min.js"></script>
     <script src="src/js/main.js"></script>
 </head>
 <body>
     <input class="center" id="input" type="text" value="Manastur">
     <button id="search" class="center" title="search">Search</button>
-    <div id="slider"></div>
+    <div id="price_slider" class="center">
+        <div id="slider"></div>
+        <input type="number" id="input-with-keypress-0" class="price_input">
+        <input type="number" id="input-with-keypress-1" class="price_input">
+    </div>
     <div id="map"></div>
+    <div id="data">
+        <div id="result_list">
+            <form>
+                <select id="results" name="result_list" size="5">
+
+                </select>
+            </form>
+        </div>
+        <div id="result_info">
+            <div id="textarea"></div>
+        </div>
+    </div>
 </body>
 </html>

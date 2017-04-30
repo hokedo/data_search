@@ -1,3 +1,8 @@
+html, body {
+	margin: 5px;
+	padding: 5px;
+}
+
 .center {
 	display: block;
 	margin: auto;
@@ -11,4 +16,53 @@ input {
 #map {
 	height: 400px;
 	width: 100%;
+}
+
+div#price_slider{
+	padding-top: 50px;
+	width: 500px;
+}
+
+div#slider{
+	width: 210px;
+}
+
+.price_input{
+	width: 100px;
+}
+
+#data{
+	width: 100%;
+	border: 3px solid #00a1ff;
+}
+
+#result_list{
+	display:inline-block;
+	width: 49%;
+}
+
+#result_info{
+	display:inline-block;
+	width: 50%;
+}
+
+#result_list form {
+	width: 50%;
+}
+
+#result_info #textarea {
+	resize: none;
+	height: 15%;
+	width: 100%;
+	overflow-y: auto;
+}
+
+hr {
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
 }
