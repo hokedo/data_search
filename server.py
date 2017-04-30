@@ -29,8 +29,11 @@ class Server(object):
 		else:
 			query = dict(urlparse.parse_qsl(url_parts.query))
 			if query.get("q"):
+				q = query["q"] if query["q"] != "*" else ""
 				limit = query.get("limit", 100)
-				output = query_db(query["q"], limit)
+				price_min = query.get("price_min", 0)
+				price_max = query.get("price_max", 1000)
+				output = query_db(q, price_min, price_max, limit)
 
 		return output
 

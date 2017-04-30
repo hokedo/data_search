@@ -66,7 +66,7 @@ def get_connection_cursor():
 	return connection, cursor
 
 
-def query_db(keyword, limit=100):
+def query_db(keyword, price_min, price_max, limit=100):
 	con, cursor = get_connection_cursor()
 	try:
 		with open("src/sql/get_adverts.sql") as get_adverts_query_path:
@@ -75,7 +75,7 @@ def query_db(keyword, limit=100):
 		with open("src/sql/get_top_5.sql") as get_top_query_path:
 			get_top_5_query = get_top_query_path.read().strip()
 
-		cursor.execute(get_adverts_query, [keyword, limit])
+		cursor.execute(get_adverts_query, [keyword, price_min, price_max, limit])
 		data = [dict(item) for item in cursor.fetchall()]
 		for apartment in data:
 			address_id = apartment["address_id"]

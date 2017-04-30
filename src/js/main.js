@@ -1,25 +1,40 @@
 var results;
 var price_slider;
+var map;
+var infowindow;
+var map_markers = [];
 
 function initMap(result=null) {
 	if(result == null){
 		result = results[0]
 	}
+
+	map = new google.maps.Map(document.getElementById('map'), {});
+	infowindow = new google.maps.InfoWindow();
+
+	update_map_markers(result);
+}
+
+function update_map_markers(result){
+
+	// reset already existing markers
+	// in case there are any
+	for(let marker of map_markers){
+		marker.setMap(null);
+	}
+
 	var center = {
 		lat: result.latitude,
 		lng: result.longitude
 	};
-	var map = new google.maps.Map(document.getElementById('map'), {
-		zoom: 15,
-		center: center
-	});
-	var infowindow = new google.maps.InfoWindow();
-
+	map.setCenter(center);
+	map.setZoom(13);
 	apartment = new google.maps.Marker({
 			position: center,
-			label: result.price,
+			label: result.price.toString() + " " + result.currency,
 			map: map
 		})
+	map_markers = [apartment];
 
 	google.maps.event.addListener(apartment, 'click', (function(marker) {
 			return function() {
@@ -43,13 +58,16 @@ function initMap(result=null) {
 				infowindow.open(map, marker);
 			}
 		})(marker));
+		map_markers.push(marker);
 	}
 }
 
-function show_result_info(selected){
-	var list_index = parseInt($(selected.target).attr("value"));
+function show_result_info(){
+	var list_index = parseInt($("#results option:selected").attr("value"));
 	var text_area = $("#result_info #textarea");
 	var result = results[list_index];
+
+	update_map_markers(result);
 
 	var url = document.createElement("a");
 	url.href = result.url;
@@ -67,7 +85,7 @@ function show_result_info(selected){
 	var text = [
 				result.title,
 				result.address,
-				result.price,
+				result.price + " " + result.currency,
 				url.outerHTML,
 				poi_info
 			].join("<br>");
@@ -86,10 +104,12 @@ function populate_result_list(results_list){
 }
 
 function query(){
-	keyword = $("input#input").val();
+	var keyword = $("input#input").val();
+	var price_range = price_slider.noUiSlider.get();
+	var price_min = price_range[0];
+	var price_max = price_range[1];
 	$.ajax({
-		url: '/?limit=5&q='+keyword,
-		data: {},
+		url: '/?limit=5&q='+keyword+'&price_min='+price_min+'&price_max='+price_max,
 		type: 'get',
 		success: function(data) {
 			results = JSON.parse(data);
@@ -181,7 +201,7 @@ $(document).ready(function(){
 
 	// event listeners
 	$("button#search").click(query);
-	$("select#results").click(show_result_info);
+	$("select#results").change(show_result_info);
 
 	// ui stuff
 	create_price_slider();
