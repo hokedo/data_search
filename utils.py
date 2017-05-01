@@ -68,6 +68,7 @@ def get_connection_cursor():
 
 def query_db(keyword, price_min, price_max, limit=100):
 	con, cursor = get_connection_cursor()
+	data = []
 	try:
 		with open("src/sql/get_adverts.sql") as get_adverts_query_path:
 			get_adverts_query = get_adverts_query_path.read().strip()
@@ -83,6 +84,22 @@ def query_db(keyword, price_min, price_max, limit=100):
 			top_5_schools = [dict(item) for item in cursor.fetchall()]
 			apartment["top_5"] = top_5_schools
 
-		return json.dumps(data)
 	finally:
 		con.close()
+
+	return json.dumps(data)
+
+def get_all_pois():
+	con, cursor = get_connection_cursor()
+	data = []
+	try:
+		with open("src/sql/get_all_poi.sql") as get_pois_query_path:
+			get_pois_query = get_pois_query_path.read().strip()
+
+		cursor.execute(get_pois_query)
+		data = [dict(item) for item in cursor.fetchall()]
+
+	finally:
+		con.close()
+
+	return json.dumps(data)

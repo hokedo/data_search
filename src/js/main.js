@@ -1,22 +1,24 @@
 var results;
+var pois;
 var price_slider;
 var map;
 var infowindow;
 var map_markers = [];
 
 function initMap(result=null) {
-	if(result == null){
-		result = results[0]
-	}
-
-	map = new google.maps.Map(document.getElementById('map'), {});
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: {
+			lat: 46.7833856, // Cluj Coordinates
+			lng: 23.6165124
+		},
+		zoom: 12
+	});
 	infowindow = new google.maps.InfoWindow();
 
-	update_map_markers(result);
+	//update_map_markers(result);
 }
 
 function update_map_markers(result){
-
 	// reset already existing markers
 	// in case there are any
 	for(let marker of map_markers){
@@ -29,9 +31,15 @@ function update_map_markers(result){
 	};
 	map.setCenter(center);
 	map.setZoom(13);
+	if(result.hasOwnProperty('price')){
+		var label = result.price.toString() + " " + result.currency;
+	}
+	else{
+		var label = result.title;
+	}
 	apartment = new google.maps.Marker({
 			position: center,
-			label: result.price.toString() + " " + result.currency,
+			label: label,
 			map: map
 		})
 	map_markers = [apartment];
@@ -103,6 +111,16 @@ function populate_result_list(results_list){
 	}
 }
 
+function populate_poi_list(poi_list){
+	var select_list = $("select#pois");
+	for(let poi of poi_list){
+		let opt = document.createElement("OPTION");
+		opt.value = poi.id;
+		opt.text = poi.title;
+		select_list.append(opt);
+	}
+}
+
 function query(){
 	var keyword = $("input#input").val();
 	var price_range = price_slider.noUiSlider.get();
@@ -114,11 +132,29 @@ function query(){
 		success: function(data) {
 			results = JSON.parse(data);
 			populate_result_list(results);
-			$("#map").children().remove();
-			$("#google_map").remove();
-			$("body").append('<script id="google_map" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXHPOuU7LiGfqwEmmfKvutVX_rPaSFqNw&callback=initMap"></script>')
 		}
 	});
+}
+
+function get_pois(){
+	$.ajax({
+		url: '/?all_pois=true',
+		type: 'get',
+		success: function(data){
+			pois = JSON.parse(data);
+			populate_poi_list(pois);
+		}
+	}
+	)
+}
+
+function set_poi_marker(){
+	var selected_id = parseInt($("#pois option:selected").attr("value"));
+	for(let poi of pois){
+		if(poi.id == selected_id){
+			update_map_markers(poi);
+		}
+	}
 }
 
 function create_price_slider(){
@@ -202,8 +238,10 @@ $(document).ready(function(){
 	// event listeners
 	$("button#search").click(query);
 	$("select#results").change(show_result_info);
+	$("select#pois").change(set_poi_marker);
 
 	// ui stuff
 	create_price_slider();
+	get_pois();
 
 })

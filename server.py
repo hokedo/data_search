@@ -5,6 +5,7 @@ import web
 import urlparse
 
 from utils import query_db
+from utils import get_all_pois
 
 urls = ('/.*', 'Server')
 app = web.application(urls, globals())
@@ -34,6 +35,8 @@ class Server(object):
 				price_min = query.get("price_min", 0)
 				price_max = query.get("price_max", 1000)
 				output = query_db(q, price_min, price_max, limit)
+			elif query.get("all_pois"):
+				output = get_all_pois()
 
 		return output
 

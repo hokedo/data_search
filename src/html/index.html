@@ -29,7 +29,19 @@
     </div>
 <!-- ========== -->
 
-    <div id="map" style="background-color: red;"></div>
+<!-- Predefined POIs list -->
+    <div id="points_of_interest">
+        <div id="poi_list">
+            <form>
+                <select id="pois" name="poi_list" size="5">
+                </select>
+            </form>
+        </div>
+    </div>
+<!-- ========== -->
+    <div id="map" style="background-color: red;">
+        <script id="google_map" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXHPOuU7LiGfqwEmmfKvutVX_rPaSFqNw&callback=initMap"></script>
+    </div>
     <div id="data">
         <div id="result_list">
             <form>
