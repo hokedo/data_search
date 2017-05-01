@@ -8,15 +8,28 @@
     <script src="src/js/nouislider.min.js"></script>
     <script src="src/js/main.js"></script>
 </head>
+
 <body>
-    <input class="center" id="input" type="text" value="Manastur">
-    <button id="search" class="center" title="search">Search</button>
-    <div id="price_slider" class="center">
-        <div id="slider"></div>
-        <input type="number" id="input-with-keypress-0" class="price_input">
-        <input type="number" id="input-with-keypress-1" class="price_input">
+
+<!-- Search bar -->
+    <input class="center search-bar" id="input" type="text" value="Manastur" placeholder="Search something">
+<!-- ========= -->
+
+<!-- Search btn -->
+    <button id="search" class="center search-btn" title="search"> Search </button>
+<!-- ========== -->
+
+<!-- Price Slider -->
+    <div id="price_slider" class="center sliderbox">
+        <div id="slider" class="center slider-style"></div>
+            <div class="a-box">
+                <input type="number" id="input-with-keypress-0" class="price_input price-box">
+                <input type="number" id="input-with-keypress-1" class="price_input price-box">
+            </div>
     </div>
-    <div id="map"></div>
+<!-- ========== -->
+
+    <div id="map" style="background-color: red;"></div>
     <div id="data">
         <div id="result_list">
             <form>
@@ -28,5 +41,7 @@
             <div id="textarea"></div>
         </div>
     </div>
+
+
 </body>
 </html>

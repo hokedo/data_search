@@ -5,7 +5,7 @@ html, body {
 
 .center {
 	display: block;
-	margin: auto;
+	margin: 0 auto;
 }
 
 input {
@@ -29,6 +29,7 @@ div#slider{
 
 .price_input{
 	width: 100px;
+    height: 30px;
 }
 
 #data{
@@ -37,7 +38,7 @@ div#slider{
 }
 
 #result_list{
-	display:inline-block;
+	display: inline-block;
 	width: 49%;
 }
 
@@ -65,4 +66,58 @@ hr {
     margin-right: auto;
     border-style: inset;
     border-width: 1px;
+}
+
+
+.search-bar {
+    height: 50px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bolder;
+    box-shadow: 5px 10px 32px -5px rgba(0,0,0,0.75);
+    margin-bottom: 20px;
+}
+.search-bar::placeholder {
+    color: lightgray;
+}
+
+.search-btn {
+    height: 60px;
+    width: 260px;
+    margin: 0 auto;
+    margin-bottom: 40px;
+    border: 2px solid #00a1ff;
+    background-color: white;
+    transition-duration: 0.6s;
+    font-size: 20px;
+    color: #00a1ff;
+    box-shadow: 5px 10px 32px -5px rgba(0,0,0,0.75);
+}
+.search-btn:hover {
+    transform: scale(1.04, 1.04 );
+    cursor: pointer;
+}
+
+.sliderbox {
+    margin-bottom: 40px;
+    background-color: #f2f4f7;
+    border: 2px solid #00a1ff;
+    box-shadow: 5px 10px 32px -5px rgba(0,0,0,0.75);
+}
+.slider-style {
+    margin-bottom: 50px;
+}
+.a-box {
+    background-color: transparent;
+    width: 50%;
+    height: 60px;
+    margin-left: 25%;
+}
+.price-box {
+    width: 49%;
+    height: 60%;
+    display: inline-block;
+    text-align: center;
+    font-weight: bolder;
+    box-shadow: 2px 6px 12px -5px rgba(0,0,0,0.75);
 }
