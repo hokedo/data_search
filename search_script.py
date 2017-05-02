@@ -137,6 +137,11 @@ if __name__ == "__main__":
 							data["bus_distance"] += step["distance"]["value"]
 
 					if any(data.values()):
+						# convert distances from metres to kilometres
+						distance /= 1000.0
+						data["bus_distance"] /= 1000.0
+						data["walking_distance"] /= 1000.0
+
 						str_data = json.dumps(data)
 						logger.info(str_data)
 						logger.info(poi["id"])

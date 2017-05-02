@@ -66,7 +66,7 @@ def get_connection_cursor():
 	return connection, cursor
 
 
-def query_db(keyword, price_min, price_max, limit=100):
+def query_db(keyword, price_min, price_max, limit=100, interest_poi_id=None):
 	con, cursor = get_connection_cursor()
 	data = []
 	try:
@@ -76,7 +76,14 @@ def query_db(keyword, price_min, price_max, limit=100):
 		with open("src/sql/get_top_5.sql") as get_top_query_path:
 			get_top_5_query = get_top_query_path.read().strip()
 
-		cursor.execute(get_adverts_query, [keyword, price_min, price_max, limit])
+		with open("src/sql/get_adverts_poi_bias.sql") as get_adverts_query_path:
+			get_adverts_poi_bias_query = get_adverts_query_path.read().strip()
+
+		if interest_poi_id and interest_poi_id > -1:
+			cursor.execute(get_adverts_poi_bias_query, [keyword, price_min, price_max, interest_poi_id, limit])
+		else:
+			cursor.execute(get_adverts_query, [keyword, price_min, price_max, limit])
+
 		data = [dict(item) for item in cursor.fetchall()]
 		for apartment in data:
 			address_id = apartment["address_id"]

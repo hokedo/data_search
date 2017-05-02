@@ -34,7 +34,8 @@ class Server(object):
 				limit = query.get("limit", 100)
 				price_min = query.get("price_min", 0)
 				price_max = query.get("price_max", 1000)
-				output = query_db(q, price_min, price_max, limit)
+				interest_poi_id = int(query.get("poi_id", 0)) or None
+				output = query_db(q, price_min, price_max, limit, interest_poi_id)
 			elif query.get("all_pois"):
 				output = get_all_pois()
 

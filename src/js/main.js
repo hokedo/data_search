@@ -51,7 +51,7 @@ function update_map_markers(result){
 			}
 		})(apartment));
 
-	for(let poi of result["top_5"]){
+	for(let poi of result["top_5"] || []){
 		let marker = new google.maps.Marker({
 			position: {
 				lat: poi.latitude,
@@ -101,6 +101,9 @@ function show_result_info(){
 }
 
 function populate_result_list(results_list){
+	// remove any items that are in the
+	// list before adding new items
+	$("select#results").children().remove();
 	var select_list = $("select#results");
 	for(let i=0; i<results_list.length; i++){
 		let result = results_list[i];
@@ -123,11 +126,12 @@ function populate_poi_list(poi_list){
 
 function query(){
 	var keyword = $("input#input").val();
+	var interest_poi_id = $("#pois option:selected").attr("value") || '-1';
 	var price_range = price_slider.noUiSlider.get();
 	var price_min = price_range[0];
 	var price_max = price_range[1];
 	$.ajax({
-		url: '/?limit=5&q='+keyword+'&price_min='+price_min+'&price_max='+price_max,
+		url: '/?limit=5&q='+keyword+'&price_min='+price_min+'&price_max='+price_max+'&poi_id='+interest_poi_id,
 		type: 'get',
 		success: function(data) {
 			results = JSON.parse(data);

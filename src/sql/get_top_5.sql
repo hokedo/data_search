@@ -6,7 +6,7 @@ SELECT
 	p.type,
 	p.latitude,
 	p.longitude,
-	(100-(100*pd.distance/max_distance) + (100*p.rating/max_rating))/2 as total_score
+	(100-(100*pd.distance/max_distance))*0.7 + (100*p.rating/max_rating)*0.3 as total_score
 FROM data.poi p
 JOIN data.poi_distance pd
 	ON p.id = pd.poi_id,
