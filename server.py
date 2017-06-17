@@ -20,7 +20,7 @@ class Server(object):
 
 		if not url_parts.query:
 			if url_parts.path == "/":
-				with open("src/html/index.html") as resource:
+				with open("index.html") as resource:
 					output = resource.read().strip()
 			elif os.path.isfile(url_parts.path.strip("/")):
 				with open(url_parts.path.strip("/")) as resource:
