@@ -131,7 +131,7 @@ function query(){
 	var price_min = price_range[0];
 	var price_max = price_range[1];
 	$.ajax({
-		url: '/?limit=5&q='+keyword+'&price_min='+price_min+'&price_max='+price_max+'&poi_id='+interest_poi_id,
+		url: '/?limit=50&q='+keyword+'&price_min='+price_min+'&price_max='+price_max+'&poi_id='+interest_poi_id,
 		type: 'get',
 		success: function(data) {
 			results = JSON.parse(data);
